@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список брендов</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+</head>
+<body>
+<h1>Список брендов</h1>
+
+<form action="/brands/add" method="post">
+  <input type="text" name="name" placeholder="Название бренда" required>
+  <button type="submit">Добавить бренд</button>
+</form>
+
+<form action="/brands/searchById" method="get">
+  <input type="number" name="id" placeholder="ID бренда" required>
+  <button type="submit">Найти по ID</button>
+</form>
+
+<form action="/brands/searchByName" method="get">
+  <input type="text" name="name" placeholder="Название бренда" required>
+  <button type="submit">Найти по названию</button>
+</form>
+
+<h2>Все бренды:</h2>
+<ul>
+  <th:block th:each="brand : ${brands}">
+    <li>
+      <span th:text="${brand.name}"></span>
+      <form action="/brands/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${brand.id}"/>
+        <input type="text" name="name" th:value="${brand.name}" placeholder="Название бренда" required/>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/brands/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${brand.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div th:if="${totalPages > 0}">
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:href="@{/brands(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+  </th:block>
+</div>
+<div th:if="${brands.isEmpty()}">
+  <p>Бренды не найдены.</p>
+</div>
+</body>
+</html>

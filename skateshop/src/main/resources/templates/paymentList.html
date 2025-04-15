@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список платежей</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+</head>
+<body>
+<h1>Список платежей</h1>
+
+<form action="/payments/add" method="post">
+  <input type="number" name="price" placeholder="Сумма" required min="1">
+  <select name="method" required>
+    <option value="">Выберите метод</option>
+    <option value="Картой">Картой</option>
+    <option value="Наличными">Наличными</option>
+  </select>
+  <input type="date" name="paymentDate" placeholder="Дата платежа" required>
+  <button type="submit">Добавить платеж</button>
+</form>
+
+<form action="/payments/searchById" method="get">
+  <input type="number" name="id" placeholder="ID платежа" required min="1">
+  <button type="submit">Найти по ID</button>
+</form>
+
+<form action="/payments/searchByMethod" method="get">
+  <select name="method" required>
+    <option value="">Выберите метод</option>
+    <option value="Картой">Картой</option>
+    <option value="Наличными">Наличными</option>
+  </select>
+  <button type="submit">Найти по методу оплаты</button>
+</form>
+
+<h2>Все платежи:</h2>
+<ul>
+  <th:block th:each="payment : ${payments}">
+    <li>
+      <span th:text="'Платеж #' + ${payment.id} + ' (Сумма: ' + ${payment.price} + ', Метод: ' + ${payment.method} + ')'"></span>
+      <form action="/payments/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${payment.id}"/>
+        <input type="number" name="price" th:value="${payment.price}" placeholder="Сумма" required min="1"/>
+        <select name="method" required>
+          <option th:selected="${payment.method == 'Картой'}" value="Картой">Картой</option>
+          <option th:selected="${payment.method == 'Наличными'}" value="Наличными">Наличными</option>
+        </select>
+        <input type="date" name="paymentDate" th:value="${payment.paymentDate}" placeholder="Дата платежа" required/>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/payments/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${payment.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div th:if="${totalPages > 0}">
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:href="@{/payments(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+  </th:block>
+</div>
+<div th:if="${payments.isEmpty()}">
+  <p>Платежи не найдены.</p>
+</div>
+</body>
+</html>

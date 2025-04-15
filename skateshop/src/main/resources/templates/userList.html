@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список пользователей</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+
+</head>
+<body>
+<h1>Список пользователей</h1>
+
+<form action="/users/add" method="post">
+  <h2>Добавить пользователя:</h2>
+  <input type="text" name="name" placeholder="Имя" required>
+  <input type="text" name="surname" placeholder="Фамилия" required>
+  <input type="text" name="lastName" placeholder="Отчество" required>
+  <input type="text" name="phoneNum" placeholder="Телефон" required>
+  <input type="text" name="login" placeholder="Логин" required>
+  <input type="password" name="password" placeholder="Пароль" required>
+  <button type="submit">Добавить пользователя</button>
+</form>
+
+<form action="/users/searchByLogin" method="get">
+  <h2>Поиск по логину:</h2>
+  <input type="text" name="login" placeholder="Логин" required>
+  <button type="submit">Найти по логину</button>
+</form>
+
+<form action="/users/searchById" method="get">
+  <h2>Поиск по ID:</h2>
+  <input type="number" name="id" placeholder="ID пользователя" required>
+  <button type="submit">Найти по ID</button>
+</form>
+
+<h2>Все пользователи:</h2>
+<ul>
+  <th:block th:each="user : ${users}">
+    <li>
+      <span th:text="${user.name} + ' ' + ${user.surname} + ' ' + ${user.lastName}"></span>
+
+      <form action="/users/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${user.id}"/>
+        <input type="text" name="name" th:value="${user.name}" placeholder="Имя" required/>
+        <input type="text" name="surname" th:value="${user.surname}" placeholder="Фамилия" required/>
+        <input type="text" name="lastName" th:value="${user.lastName}" placeholder="Отчество" required/>
+        <input type="text" name="phoneNum" th:value="${user.phoneNum}" placeholder="Телефон" required/>
+        <input type="text" name="login" th:value="${user.login}" placeholder="Логин" required/>
+        <input type="password" name="password" th:value="${user.password}" placeholder="Пароль" required/>
+        <button type="submit">Обновить</button>
+      </form>
+
+      <form action="/users/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${user.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div th:if="${totalPages > 0}">
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:href="@{/users(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+  </th:block>
+</div>
+<div th:if="${users.isEmpty()}">
+  <p>Пользователи не найдены.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список товаров</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+</head>
+<body>
+<h1>Список товаров</h1>
+
+<form action="/products/add" method="post">
+  <input type="text" name="productTitle" placeholder="Название" required>
+  <input type="number" name="price" placeholder="Цена" min="1" required>
+  <input type="number" name="quantity" placeholder="Количество" min="1" required>
+  <button type="submit">Добавить продукт</button>
+</form>
+
+<form action="/products/searchById" method="get">
+  <input type="number" name="id" placeholder="ID продукта" required>
+  <button type="submit">Найти по ID</button>
+</form>
+
+<form action="/products/searchByTitle" method="get">
+  <input type="text" name="title" placeholder="Название продукта" required>
+  <button type="submit">Найти по названию</button>
+</form>
+
+<h2>Все товары:</h2>
+<ul>
+  <th:block th:each="product : ${products}">
+    <li>
+      <span th:text="${product.productTitle} + ' (Цена: ' + ${product.price} + ', Количество: ' + ${product.quantity} + ')'"></span>
+      <form action="/products/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${product.id}"/>
+        <input type="text" name="productTitle" th:value="${product.productTitle}" placeholder="Название" required/>
+        <input type="number" name="price" th:value="${product.price}" placeholder="Цена" min="1" required/>
+        <input type="number" name="quantity" th:value="${product.quantity}" placeholder="Количество" min="1" required/>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/products/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${product.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div th:if="${totalPages > 0}">
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:href="@{/products(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+  </th:block>
+</div>
+<div th:if="${products.isEmpty()}">
+  <p>Товары не найдены.</p>
+</div>
+</body>
+</html>

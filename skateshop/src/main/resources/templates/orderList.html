@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список заказов</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+</head>
+<body>
+<h1>Список заказов</h1>
+
+<form action="/orders/add" method="post">
+  <input type="date" name="bookingDate" placeholder="Дата заказа" required>
+  <select name="status" required>
+    <option value="">Выберите статус</option>
+    <option value="В процессе">В процессе</option>
+    <option value="Отменен">Отменен</option>
+    <option value="Доставлен">Доставлен</option>
+  </select>
+  <button type="submit">Добавить заказ</button>
+</form>
+
+<form action="/orders/searchById" method="get">
+  <input type="number" name="id" placeholder="ID заказа" required>
+  <button type="submit">Найти по ID</button>
+</form>
+
+<form action="/orders/searchByStatus" method="get">
+  <select name="status" required>
+    <option value="">Выберите статус</option>
+    <option value="В процессе">В процессе</option>
+    <option value="Отменен">Отменен</option>
+    <option value="Доставлен">Доставлен</option>
+  </select>
+  <button type="submit">Найти по статусу</button>
+</form>
+
+<h2>Все заказы:</h2>
+<ul>
+  <th:block th:each="order : ${orders}">
+    <li>
+      <span th:text="'Заказ #' + ${order.id} + ' (Дата: ' + ${order.bookingDate} + ', Статус: ' + ${order.status} + ')'"></span>
+      <form action="/orders/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${order.id}"/>
+        <input type="date" name="bookingDate" th:value="${order.bookingDate}" placeholder="Дата заказа" required/>
+        <select name="status" required>
+          <option th:selected="${order.status == 'В процессе'}" value="В процессе">В процессе</option>
+          <option th:selected="${order.status == 'Отменен'}" value="Отменен">Отменен</option>
+          <option th:selected="${order.status == 'Доставлен'}" value="Доставлен">Доставлен</option>
+        </select>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/orders/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${order.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div th:if="${totalPages > 0}">
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:href="@{/orders(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+  </th:block>
+</div>
+<div th:if="${orders.isEmpty()}">
+  <p>Заказы не найдены.</p>
+</div>
+</body>
+</html>

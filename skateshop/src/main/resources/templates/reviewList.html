@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список отзывов</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+</head>
+<body>
+<h1>Список отзывов</h1>
+
+<form action="/reviews/add" method="post">
+  <input type="text" name="reviewTitle" placeholder="Заголовок отзыва" required maxlength="200">
+  <input type="number" name="rating" placeholder="Рейтинг (1-5)" min="1" max="5" required>
+  <input type="date" name="reviewDate" placeholder="Дата отзыва">
+  <button type="submit">Добавить отзыв</button>
+</form>
+
+<form action="/reviews/searchById" method="get">
+  <input type="number" name="id" placeholder="ID отзыва" required>
+  <button type="submit">Найти по ID</button>
+</form>
+
+<form action="/reviews/searchByRating" method="get">
+  <input type="number" name="rating" placeholder="Рейтинг (1-5)" min="1" max="5" required>
+  <button type="submit">Найти по рейтингу</button>
+</form>
+
+<h2>Все отзывы:</h2>
+<ul>
+  <th:block th:each="review : ${reviews}">
+    <li>
+      <span th:text="${review.reviewTitle} + ' (Рейтинг: ' + ${review.rating} + ', Дата: ' + ${review.reviewDate} + ')'"></span>
+      <form action="/reviews/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${review.id}"/>
+        <input type="text" name="reviewTitle" th:value="${review.reviewTitle}" placeholder="Заголовок" required maxlength="200"/>
+        <input type="number" name="rating" th:value="${review.rating}" placeholder="Рейтинг" min="1" max="5" required/>
+        <input type="date" name="reviewDate" th:value="${review.reviewDate}" placeholder="Дата отзыва" required/>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/reviews/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${review.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div th:if="${totalPages > 0}">
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:href="@{/reviews(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+  </th:block>
+</div>
+<div th:if="${reviews.isEmpty()}">
+  <p>Отзывы не найдены.</p>
+</div>
+</body>
+</html>
