@@ -3,8 +3,8 @@ package com.website.skateshop.model;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
-public class    ReviewModel {
-    private int id;
+public class ReviewModel {
+    private Integer id;
 
     @NotBlank(message = "Заголовок отзыва не может быть пустым")
     @Size(max = 200, message = "Заголовок отзыва не может быть длиннее 200 символов")
@@ -18,21 +18,25 @@ public class    ReviewModel {
     @NotNull(message = "Дата отзыва не может быть пустой")
     private LocalDate reviewDate;
 
+    private Integer userId;
+    private String userName;
+
     public ReviewModel() {
     }
 
-    public ReviewModel(int id, String reviewTitle, Integer rating, LocalDate reviewDate) {
+    public ReviewModel(Integer id, String reviewTitle, Integer rating, LocalDate reviewDate) {
         this.id = id;
         this.reviewTitle = reviewTitle;
         this.rating = rating;
         this.reviewDate = reviewDate;
     }
 
-    public int getId() {
+    // Геттеры и сеттеры
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -58,5 +62,21 @@ public class    ReviewModel {
 
     public void setReviewDate(LocalDate reviewDate) {
         this.reviewDate = reviewDate;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

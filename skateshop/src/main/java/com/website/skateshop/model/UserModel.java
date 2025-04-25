@@ -1,11 +1,9 @@
 package com.website.skateshop.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class UserModel {
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "Имя не может быть пустым")
     @Size(max = 30, message = "Имя не может быть длиннее 30 символов")
@@ -29,7 +27,12 @@ public class UserModel {
     @NotBlank(message = "Пароль не может быть пустым")
     private String password;
 
-    public UserModel(int id, String name, String surname, String lastName, String phoneNum, String login, String password) {
+    // Конструкторы
+    public UserModel() {
+    }
+
+    public UserModel(Integer id, String name, String surname, String lastName,
+                     String phoneNum, String login, String password) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -39,11 +42,12 @@ public class UserModel {
         this.password = password;
     }
 
-    public int getId() {
+    // Геттеры и сеттеры
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -92,14 +92,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserEntity convertToEntity(UserModel model) {
-        return new UserEntity(
-                model.getId(),
-                model.getName(),
-                model.getSurname(),
-                model.getLastName(),
-                model.getPhoneNum(),
-                model.getLogin(),
-                model.getPassword()
-        );
+        UserEntity entity = new UserEntity();
+        entity.setId(model.getId());
+        entity.setName(model.getName());
+        entity.setSurname(model.getSurname());
+        entity.setLastName(model.getLastName());
+        entity.setPhoneNum(model.getPhoneNum());
+        entity.setLogin(model.getLogin());
+        entity.setPassword(model.getPassword());
+        return entity;
     }
 }

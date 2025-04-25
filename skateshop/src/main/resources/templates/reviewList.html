@@ -12,6 +12,12 @@
   <input type="text" name="reviewTitle" placeholder="Заголовок отзыва" required maxlength="200">
   <input type="number" name="rating" placeholder="Рейтинг (1-5)" min="1" max="5" required>
   <input type="date" name="reviewDate" placeholder="Дата отзыва">
+  <select name="userId" required>
+    <option value="">Выберите пользователя</option>
+    <th:block th:each="user : ${users}">
+      <option th:value="${user.id}" th:text="${user.name + ' ' + user.surname}"></option>
+    </th:block>
+  </select>
   <button type="submit">Добавить отзыв</button>
 </form>
 
@@ -29,7 +35,7 @@
 <ul>
   <th:block th:each="review : ${reviews}">
     <li>
-      <span th:text="${review.reviewTitle} + ' (Рейтинг: ' + ${review.rating} + ', Дата: ' + ${review.reviewDate} + ')'"></span>
+      <span th:text="${review.reviewTitle} + ' (Рейтинг: ' + ${review.rating} + ', Дата: ' + ${review.reviewDate} + ', Автор: ' + ${review.userName}"></span>
       <form action="/reviews/update" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${review.id}"/>
         <input type="text" name="reviewTitle" th:value="${review.reviewTitle}" placeholder="Заголовок" required maxlength="200"/>

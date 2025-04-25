@@ -2,6 +2,7 @@ package com.website.skateshop.controller;
 
 import com.website.skateshop.model.ReviewModel;
 import com.website.skateshop.service.ReviewService;
+import com.website.skateshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,9 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
+    @Autowired
+    private UserService userService;
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @GetMapping
@@ -25,6 +29,7 @@ public class ReviewController {
                                 @RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "10") int size) {
         model.addAttribute("reviews", reviewService.findReviewsPaginated(page, size));
+        model.addAttribute("users", userService.findAllUsers());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) reviewService.countReviews() / size));
         return "reviewList";
@@ -53,9 +58,15 @@ public class ReviewController {
     @PostMapping("/add")
     public String addReview(@RequestParam String reviewTitle,
                             @RequestParam Integer rating,
-                            @RequestParam(required = false) String reviewDate) {
+                            @RequestParam(required = false) String reviewDate,
+                            @RequestParam Integer userId) {
         LocalDate parsedDate = reviewDate != null ? LocalDate.parse(reviewDate, DATE_FORMATTER) : LocalDate.now();
-        ReviewModel newReview = new ReviewModel(0, reviewTitle, rating, parsedDate);
+        ReviewModel newReview = new ReviewModel();
+        newReview.setReviewTitle(reviewTitle);
+        newReview.setRating(rating);
+        newReview.setReviewDate(parsedDate);
+        newReview.setUserId(userId);
+
         reviewService.addReview(newReview);
         return "redirect:/reviews";
     }

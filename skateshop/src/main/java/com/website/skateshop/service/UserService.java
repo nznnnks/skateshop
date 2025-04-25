@@ -1,7 +1,6 @@
 package com.website.skateshop.service;
 
 import com.website.skateshop.model.UserModel;
-
 import java.util.List;
 
 public interface UserService {
@@ -11,7 +10,6 @@ public interface UserService {
     UserModel addUser(UserModel user);
     UserModel updateUser(UserModel user);
     void deleteUser(int id);
-
     List<UserModel> findUsersPaginated(int page, int size);
     long countUsers();
 }

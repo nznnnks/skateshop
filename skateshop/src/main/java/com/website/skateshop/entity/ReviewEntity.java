@@ -1,43 +1,67 @@
 package com.website.skateshop.entity;
 
-import com.website.skateshop.model.ReviewModel;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "review")
-public class ReviewEntity extends ReviewModel {
+public class ReviewEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Override
-    public int getId() {
-        return super.getId();
-    }
+    private Integer id;
 
     @Column(name = "reviewtitle", nullable = false, length = 200)
-    @Override
-    public String getReviewTitle() {
-        return super.getReviewTitle();
-    }
+    private String reviewTitle;
 
     @Column(name = "rating", nullable = false)
-    @Override
-    public Integer getRating() {
-        return super.getRating();
-    }
+    private Integer rating;
 
     @Column(name = "reviewdate", nullable = false, columnDefinition = "date default CURRENT_DATE")
-    @Override
+    private LocalDate reviewDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    private UserEntity user;
+
+    // Геттеры и сеттеры
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getReviewTitle() {
+        return reviewTitle;
+    }
+
+    public void setReviewTitle(String reviewTitle) {
+        this.reviewTitle = reviewTitle;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
     public LocalDate getReviewDate() {
-        return super.getReviewDate();
+        return reviewDate;
     }
 
-    public ReviewEntity() {
-        super();
+    public void setReviewDate(LocalDate reviewDate) {
+        this.reviewDate = reviewDate;
     }
 
-    public ReviewEntity(int id, String reviewTitle, Integer rating, LocalDate reviewDate) {
-        super(id, reviewTitle, rating, reviewDate);
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 }
