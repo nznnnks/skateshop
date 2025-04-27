@@ -1,52 +1,83 @@
 package com.website.skateshop.entity;
 
-import com.website.skateshop.model.PaymentModel;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "payment")
-public class PaymentEntity extends PaymentModel {
+public class PaymentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Override
-    public int getId() {
-        return super.getId();
-    }
+    private Integer id;
 
     @Column(name = "price", nullable = false)
-    @Override
-    public int getPrice() {
-        return super.getPrice();
-    }
+    private Integer price;
 
     @Column(name = "paymentmethod", nullable = false, length = 10)
-    @Override
-    public String getMethod() {
-        return super.getMethod();
-    }
+    private String method;
 
-    @Column(name = "paymentdate", nullable = false, columnDefinition = "date default NOW()")
-    public LocalDate getPaymentLocalDate() {
-        return super.getPaymentDateAsLocalDate();
-    }
+    @Column(name = "paymentdate", nullable = false)
+    private LocalDate paymentDate;
 
-    public void setPaymentLocalDate(LocalDate date) {
-        super.setPaymentDateFromLocalDate(date);
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = true)
+    private UserEntity user;
 
-    @Transient
-    @Override
-    public String getPaymentDate() {
-        return super.getPaymentDate();
-    }
+    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderEntity> orders;
 
+    // Конструкторы
     public PaymentEntity() {
-        super();
     }
 
-    public PaymentEntity(int id, int price, String method, String paymentDate) {
-        super(id, price, method, paymentDate);
+    // Геттеры и сеттеры
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public LocalDate getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(LocalDate paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public List<OrderEntity> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderEntity> orders) {
+        this.orders = orders;
     }
 }

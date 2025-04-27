@@ -4,11 +4,15 @@ public class CategoryModel {
     private int id;
     private String name;
 
+    public CategoryModel() {
+    }
+
     public CategoryModel(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
+    // Геттеры и сеттеры
     public int getId() {
         return id;
     }

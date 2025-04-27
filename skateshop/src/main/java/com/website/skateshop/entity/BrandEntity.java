@@ -1,30 +1,54 @@
 package com.website.skateshop.entity;
 
-import com.website.skateshop.model.BrandModel;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "brand")
-public class BrandEntity extends BrandModel {
+public class BrandEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Override
-    public int getId() {
-        return super.getId();
-    }
+    private Integer id;
 
     @Column(name = "brandtitle", nullable = false, length = 30)
-    @Override
-    public String getName() {
-        return super.getName();
-    }
+    private String name;
 
+    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductEntity> products = new ArrayList<>();
+
+    // Конструкторы
     public BrandEntity() {
-        super(0, null);
+        // Пустой конструктор требуется JPA
     }
 
-    public BrandEntity(int id, String name) {
-        super(id, name);
+    public BrandEntity(String name) {
+        this.name = name;
+    }
+
+    // Геттеры и сеттеры
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<ProductEntity> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<ProductEntity> products) {
+        this.products = products;
     }
 }

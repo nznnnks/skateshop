@@ -16,36 +16,52 @@
     <option value="Отменен">Отменен</option>
     <option value="Доставлен">Доставлен</option>
   </select>
-  <button type="submit">Добавить заказ</button>
-</form>
 
-<form action="/orders/searchById" method="get">
-  <input type="number" name="id" placeholder="ID заказа" required>
-  <button type="submit">Найти по ID</button>
-</form>
-
-<form action="/orders/searchByStatus" method="get">
-  <select name="status" required>
-    <option value="">Выберите статус</option>
-    <option value="В процессе">В процессе</option>
-    <option value="Отменен">Отменен</option>
-    <option value="Доставлен">Доставлен</option>
+  <select name="userId" required>
+    <option value="">Выберите пользователя</option>
+    <th:block th:each="user : ${users}">
+      <option th:value="${user.id}" th:text="${user.name + ' ' + user.surname}"></option>
+    </th:block>
   </select>
-  <button type="submit">Найти по статусу</button>
+
+  <select name="paymentId" required>
+    <option value="">Выберите оплату</option>
+    <th:block th:each="payment : ${payments}">
+      <option th:value="${payment.id}" th:text="${payment.method + ' (ID: ' + payment.id + ')'}"></option>
+    </th:block>
+  </select>
+
+  <button type="submit">Добавить заказ</button>
 </form>
 
 <h2>Все заказы:</h2>
 <ul>
   <th:block th:each="order : ${orders}">
     <li>
-      <span th:text="'Заказ #' + ${order.id} + ' (Дата: ' + ${order.bookingDate} + ', Статус: ' + ${order.status} + ')'"></span>
+      <span th:text="'Заказ #' + ${order.id} +
+                   ' (Дата: ' + ${order.bookingDate} +
+                   ', Статус: ' + ${order.status} +
+                   ', Пользователь: ' + ${order.userName} +
+                   ', Оплата: ' + ${order.paymentMethod} + ')'"></span>
       <form action="/orders/update" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${order.id}"/>
-        <input type="date" name="bookingDate" th:value="${order.bookingDate}" placeholder="Дата заказа" required/>
+        <input type="date" name="bookingDate" th:value="${order.bookingDate}" required>
         <select name="status" required>
           <option th:selected="${order.status == 'В процессе'}" value="В процессе">В процессе</option>
           <option th:selected="${order.status == 'Отменен'}" value="Отменен">Отменен</option>
           <option th:selected="${order.status == 'Доставлен'}" value="Доставлен">Доставлен</option>
+        </select>
+        <select name="userId" required>
+          <option th:each="user : ${users}"
+                  th:value="${user.id}"
+                  th:text="${user.name + ' ' + user.surname}"
+                  th:selected="${user.id == order.userId}"></option>
+        </select>
+        <select name="paymentId" required>
+          <option th:each="payment : ${payments}"
+                  th:value="${payment.id}"
+                  th:text="${payment.method + ' (ID: ' + payment.id + ')'}"
+                  th:selected="${payment.id == order.paymentId}"></option>
         </select>
         <button type="submit">Обновить</button>
       </form>
@@ -62,9 +78,6 @@
   <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
     <a th:href="@{/orders(page=${i}, size=${10})}" th:text="${i + 1}"></a>
   </th:block>
-</div>
-<div th:if="${orders.isEmpty()}">
-  <p>Заказы не найдены.</p>
 </div>
 </body>
 </html>

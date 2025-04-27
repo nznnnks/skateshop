@@ -1,8 +1,10 @@
 package com.website.skateshop.service;
 
 import com.website.skateshop.entity.PaymentEntity;
+import com.website.skateshop.entity.UserEntity;
 import com.website.skateshop.model.PaymentModel;
 import com.website.skateshop.repository.PaymentRepository;
+import com.website.skateshop.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -14,9 +16,12 @@ import java.util.stream.Collectors;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final UserRepository userRepository;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository,
+                              UserRepository userRepository) {
         this.paymentRepository = paymentRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -41,32 +46,41 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentModel addPayment(PaymentModel payment) {
-        if (payment.getPrice() <= 0) {
-            throw new IllegalArgumentException("Сумма платежа должна быть положительной");
-        }
+    public PaymentModel addPayment(PaymentModel paymentModel) {
+        PaymentEntity entity = new PaymentEntity();
+        entity.setPrice(paymentModel.getPrice());
+        entity.setMethod(paymentModel.getMethod());
+        entity.setPaymentDate(paymentModel.getPaymentDate());
 
-        PaymentEntity entity = convertToEntity(payment);
+        UserEntity user = userRepository.findById(paymentModel.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        entity.setUser(user);
+
         PaymentEntity saved = paymentRepository.save(entity);
         return convertToModel(saved);
     }
 
     @Override
-    public PaymentModel updatePayment(PaymentModel payment) {
-        if (!paymentRepository.existsById(payment.getId())) {
-            throw new IllegalArgumentException("Платеж с ID " + payment.getId() + " не найден");
+    public PaymentModel updatePayment(PaymentModel paymentModel) {
+        PaymentEntity entity = paymentRepository.findById(paymentModel.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+
+        entity.setPrice(paymentModel.getPrice());
+        entity.setMethod(paymentModel.getMethod());
+        entity.setPaymentDate(paymentModel.getPaymentDate());
+
+        if (!entity.getUser().getId().equals(paymentModel.getUserId())) {
+            UserEntity user = userRepository.findById(paymentModel.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            entity.setUser(user);
         }
 
-        PaymentEntity entity = convertToEntity(payment);
         PaymentEntity updated = paymentRepository.save(entity);
         return convertToModel(updated);
     }
 
     @Override
     public void deletePayment(int id) {
-        if (!paymentRepository.existsById(id)) {
-            throw new IllegalArgumentException("Платеж с ID " + id + " не найден");
-        }
         paymentRepository.deleteById(id);
     }
 
@@ -84,20 +98,34 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private PaymentModel convertToModel(PaymentEntity entity) {
-        return new PaymentModel(
-                entity.getId(),
-                entity.getPrice(),
-                entity.getMethod(),
-                entity.getPaymentDate()
-        );
+        PaymentModel model = new PaymentModel();
+        model.setId(entity.getId());
+        model.setPrice(entity.getPrice());
+        model.setMethod(entity.getMethod());
+        model.setPaymentDate(entity.getPaymentDate());
+
+        // Add null check for user
+        if (entity.getUser() != null) {
+            model.setUserId(entity.getUser().getId());
+        }
+
+        return model;
     }
 
     private PaymentEntity convertToEntity(PaymentModel model) {
-        return new PaymentEntity(
-                model.getId(),
-                model.getPrice(),
-                model.getMethod(),
-                model.getPaymentDate()
-        );
+        PaymentEntity entity = new PaymentEntity();
+        entity.setId(model.getId());
+        entity.setPrice(model.getPrice());
+        entity.setMethod(model.getMethod());
+        entity.setPaymentDate(model.getPaymentDate());
+
+        // Only set user if userId is provided
+        if (model.getUserId() != null) {
+            UserEntity user = userRepository.findById(model.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            entity.setUser(user);
+        }
+
+        return entity;
     }
 }

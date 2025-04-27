@@ -1,37 +1,31 @@
 package com.website.skateshop.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class ProductModel {
-    private int id;
+    private Integer id;
 
-    @NotBlank(message = "Название продукта не может быть пустым")
-    @Size(max = 30, message = "Название продукта не может быть длиннее 30 символов")
+    @NotBlank
+    @Size(max = 30)
     private String productTitle;
 
-    @NotNull(message = "Цена не может быть пустой")
-    @Positive(message = "Цена должна быть положительным числом")
+    @NotNull
+    @Positive
     private Integer price;
 
-    @NotNull(message = "Количество не может быть пустым")
-    @Positive(message = "Количество должно быть положительным числом")
+    @NotNull
+    @Positive
     private Integer quantity;
 
-    public ProductModel(int id, String productTitle, Integer price, Integer quantity) {
-        this.id = id;
-        this.productTitle = productTitle;
-        this.price = price;
-        this.quantity = quantity;
-    }
+    private Integer brandId;
+    private Integer categoryId;
 
-    public int getId() {
+    // Геттеры и сеттеры
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -57,5 +51,21 @@ public class ProductModel {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Integer getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Integer brandId) {
+        this.brandId = brandId;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 }

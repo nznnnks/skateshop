@@ -33,6 +33,12 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewEntity> reviews = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderEntity> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PaymentEntity> payments = new ArrayList<>();
+
     public Integer getId() {
         return id;
     }
@@ -95,5 +101,51 @@ public class UserEntity {
 
     public void setReviews(List<ReviewEntity> reviews) {
         this.reviews = reviews;
+    }
+
+    public List<OrderEntity> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderEntity> orders) {
+        this.orders = orders;
+    }
+
+    public List<PaymentEntity> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<PaymentEntity> payments) {
+        this.payments = payments;
+    }
+
+    public void addReview(ReviewEntity review) {
+        reviews.add(review);
+        review.setUser(this);
+    }
+
+    public void removeReview(ReviewEntity review) {
+        reviews.remove(review);
+        review.setUser(null);
+    }
+
+    public void addOrder(OrderEntity order) {
+        orders.add(order);
+        order.setUser(this);
+    }
+
+    public void removeOrder(OrderEntity order) {
+        orders.remove(order);
+        order.setUser(null);
+    }
+
+    public void addPayment(PaymentEntity payment) {
+        payments.add(payment);
+        payment.setUser(this);
+    }
+
+    public void removePayment(PaymentEntity payment) {
+        payments.remove(payment);
+        payment.setUser(null);
     }
 }

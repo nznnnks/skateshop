@@ -45,14 +45,17 @@ public class BrandServiceImpl implements BrandService {
         if (brandRepository.existsByName(brand.getName())) {
             throw new IllegalArgumentException("Brand with this name already exists");
         }
-        BrandEntity entity = convertToEntity(brand);
+        BrandEntity entity = new BrandEntity();
+        entity.setName(brand.getName());
         BrandEntity saved = brandRepository.save(entity);
         return convertToModel(saved);
     }
 
     @Override
     public BrandModel updateBrand(BrandModel brand) {
-        BrandEntity entity = convertToEntity(brand);
+        BrandEntity entity = brandRepository.findById(brand.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Brand not found"));
+        entity.setName(brand.getName());
         BrandEntity updated = brandRepository.save(entity);
         return convertToModel(updated);
     }
@@ -76,16 +79,16 @@ public class BrandServiceImpl implements BrandService {
     }
 
     private BrandModel convertToModel(BrandEntity entity) {
-        return new BrandModel(
-                entity.getId(),
-                entity.getName()
-        );
+        BrandModel model = new BrandModel();
+        model.setId(entity.getId());
+        model.setName(entity.getName());
+        return model;
     }
 
     private BrandEntity convertToEntity(BrandModel model) {
-        return new BrandEntity(
-                model.getId(),
-                model.getName()
-        );
+        BrandEntity entity = new BrandEntity();
+        entity.setId(model.getId());
+        entity.setName(model.getName());
+        return entity;
     }
 }

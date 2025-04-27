@@ -2,6 +2,8 @@ package com.website.skateshop.controller;
 
 import com.website.skateshop.model.OrderModel;
 import com.website.skateshop.service.OrderService;
+import com.website.skateshop.service.PaymentService;
+import com.website.skateshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,12 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PaymentService paymentService;
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @GetMapping
@@ -25,6 +33,8 @@ public class OrderController {
                                @RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "10") int size) {
         model.addAttribute("orders", orderService.findOrdersPaginated(page, size));
+        model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("payments", paymentService.findAllPayments());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) orderService.countOrders() / size));
         return "orderList";
@@ -51,17 +61,31 @@ public class OrderController {
     }
 
     @PostMapping("/add")
-    public String addOrder(@RequestParam String bookingDate, @RequestParam String status) {
-        LocalDate parsedDate = LocalDate.parse(bookingDate, DATE_FORMATTER);
-        OrderModel newOrder = new OrderModel(0, parsedDate, status);
+    public String addOrder(@RequestParam String bookingDate,
+                           @RequestParam String status,
+                           @RequestParam Integer userId,
+                           @RequestParam Integer paymentId) {
+        OrderModel newOrder = new OrderModel();
+        newOrder.setBookingDate(LocalDate.parse(bookingDate, DATE_FORMATTER));
+        newOrder.setStatus(status);
+        newOrder.setUserId(userId);
+        newOrder.setPaymentId(paymentId);
         orderService.addOrder(newOrder);
         return "redirect:/orders";
     }
 
     @PostMapping("/update")
-    public String updateOrder(@RequestParam int id, @RequestParam String bookingDate, @RequestParam String status) {
-        LocalDate parsedDate = LocalDate.parse(bookingDate, DATE_FORMATTER);
-        OrderModel updatedOrder = new OrderModel(id, parsedDate, status);
+    public String updateOrder(@RequestParam int id,
+                              @RequestParam String bookingDate,
+                              @RequestParam String status,
+                              @RequestParam Integer userId,
+                              @RequestParam Integer paymentId) {
+        OrderModel updatedOrder = new OrderModel();
+        updatedOrder.setId(id);
+        updatedOrder.setBookingDate(LocalDate.parse(bookingDate, DATE_FORMATTER));
+        updatedOrder.setStatus(status);
+        updatedOrder.setUserId(userId);
+        updatedOrder.setPaymentId(paymentId);
         orderService.updateOrder(updatedOrder);
         return "redirect:/orders";
     }

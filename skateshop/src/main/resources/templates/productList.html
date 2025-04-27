@@ -12,6 +12,21 @@
   <input type="text" name="productTitle" placeholder="Название" required>
   <input type="number" name="price" placeholder="Цена" min="1" required>
   <input type="number" name="quantity" placeholder="Количество" min="1" required>
+
+  <select name="brandId" required>
+    <option value="">Выберите бренд</option>
+    <th:block th:each="brand : ${brands}">
+      <option th:value="${brand.id}" th:text="${brand.name}"></option>
+    </th:block>
+  </select>
+
+  <select name="categoryId" required>
+    <option value="">Выберите категорию</option>
+    <th:block th:each="category : ${categories}">
+      <option th:value="${category.id}" th:text="${category.name}"></option>
+    </th:block>
+  </select>
+
   <button type="submit">Добавить продукт</button>
 </form>
 

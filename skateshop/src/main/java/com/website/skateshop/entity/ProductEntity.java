@@ -1,42 +1,85 @@
 package com.website.skateshop.entity;
 
 import jakarta.persistence.*;
-import com.website.skateshop.model.ProductModel;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "product")
-public class ProductEntity extends ProductModel {
+public class ProductEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Override
-    public int getId() {
-        return super.getId();
-    }
+    private Integer id;
 
+    @NotBlank
+    @Size(max = 30)
     @Column(name = "producttitle", nullable = false, length = 30)
-    @Override
-    public String getProductTitle() {
-        return super.getProductTitle();
-    }
+    private String productTitle;
 
+    @NotNull
+    @Positive
     @Column(name = "price", nullable = false)
-    @Override
-    public Integer getPrice() {
-        return super.getPrice();
-    }
+    private Integer price;
 
+    @NotNull
+    @Positive
     @Column(name = "quantity", nullable = false)
-    @Override
+    private Integer quantity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id", nullable = true)
+    private BrandEntity brand;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = true)
+    private CategoryEntity category;
+
+    // Геттеры и сеттеры
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getProductTitle() {
+        return productTitle;
+    }
+
+    public void setProductTitle(String productTitle) {
+        this.productTitle = productTitle;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
     public Integer getQuantity() {
-        return super.getQuantity();
+        return quantity;
     }
 
-    public ProductEntity() {
-        super(0, null, null, null);
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
-    public ProductEntity(int id, String productTitle, Integer price, Integer quantity) {
-        super(id, productTitle, price, quantity);
+    public BrandEntity getBrand() {
+        return brand;
+    }
+
+    public void setBrand(BrandEntity brand) {
+        this.brand = brand;
+    }
+
+    public CategoryEntity getCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
     }
 }

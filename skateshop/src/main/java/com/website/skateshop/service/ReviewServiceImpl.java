@@ -1,8 +1,10 @@
 package com.website.skateshop.service;
 
+import com.website.skateshop.entity.OrderEntity;
 import com.website.skateshop.entity.ReviewEntity;
 import com.website.skateshop.entity.UserEntity;
 import com.website.skateshop.model.ReviewModel;
+import com.website.skateshop.repository.OrderRepository;
 import com.website.skateshop.repository.ReviewRepository;
 import com.website.skateshop.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
@@ -17,10 +19,14 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, UserRepository userRepository) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository,
+                             UserRepository userRepository,
+                             OrderRepository orderRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -49,17 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (review.getReviewDate() == null) {
             review.setReviewDate(LocalDate.now());
         }
-
-        if (review.getUserId() == null) {
-            throw new IllegalArgumentException("User ID must not be null");
-        }
-
-        UserEntity user = userRepository.findById(review.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
         ReviewEntity entity = convertToEntity(review);
-        entity.setUser(user);
-
         ReviewEntity saved = reviewRepository.save(entity);
         return convertToModel(saved);
     }
@@ -95,9 +91,17 @@ public class ReviewServiceImpl implements ReviewService {
         model.setRating(entity.getRating());
         model.setReviewDate(entity.getReviewDate());
 
+        // Связь с User
         if (entity.getUser() != null) {
             model.setUserId(entity.getUser().getId());
             model.setUserName(entity.getUser().getName() + " " + entity.getUser().getSurname());
+        }
+
+        // Связь с Order
+        if (entity.getOrder() != null) {
+            model.setOrderId(entity.getOrder().getId());
+            model.setOrderInfo("Заказ #" + entity.getOrder().getId() +
+                    " (" + entity.getOrder().getBookingDate() + ")");
         }
 
         return model;
@@ -110,10 +114,18 @@ public class ReviewServiceImpl implements ReviewService {
         entity.setRating(model.getRating());
         entity.setReviewDate(model.getReviewDate());
 
+        // Связь с User
         if (model.getUserId() != null) {
-            UserEntity user = new UserEntity();
-            user.setId(model.getUserId());
+            UserEntity user = userRepository.findById(model.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
             entity.setUser(user);
+        }
+
+        // Связь с Order
+        if (model.getOrderId() != null) {
+            OrderEntity order = orderRepository.findById(model.getOrderId())
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+            entity.setOrder(order);
         }
 
         return entity;

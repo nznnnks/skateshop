@@ -1,13 +1,14 @@
 package com.website.skateshop.service;
 
-import com.website.skateshop.entity.OrderEntity;
+import com.website.skateshop.entity.*;
 import com.website.skateshop.model.OrderModel;
 import com.website.skateshop.repository.OrderRepository;
+import com.website.skateshop.repository.UserRepository;
+import com.website.skateshop.repository.PaymentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,9 +16,15 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            UserRepository userRepository,
+                            PaymentRepository paymentRepository) {
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -27,6 +34,47 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
+    private OrderModel convertToModel(OrderEntity entity) {
+        OrderModel model = new OrderModel();
+        model.setId(entity.getId());
+        model.setBookingDate(entity.getBookingDate());
+        model.setStatus(entity.getStatus());
+
+        if (entity.getUser() != null) {
+            model.setUserId(entity.getUser().getId());
+            model.setUserName(entity.getUser().getName() + " " + entity.getUser().getSurname());
+        }
+
+        if (entity.getPayment() != null) {
+            model.setPaymentId(entity.getPayment().getId());
+            model.setPaymentMethod(entity.getPayment().getMethod());
+        }
+
+        return model;
+    }
+
+    private OrderEntity convertToEntity(OrderModel model) {
+        OrderEntity entity = new OrderEntity();
+        entity.setId(model.getId());
+        entity.setBookingDate(model.getBookingDate());
+        entity.setStatus(model.getStatus());
+
+        if (model.getUserId() != null) {
+            UserEntity user = userRepository.findById(model.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            entity.setUser(user);
+        }
+
+        if (model.getPaymentId() != null) {
+            PaymentEntity payment = paymentRepository.findById(model.getPaymentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+            entity.setPayment(payment);
+        }
+
+        return entity;
+    }
+
+    // Остальные методы остаются без изменений
     @Override
     public OrderModel findOrderById(int id) {
         return orderRepository.findById(id)
@@ -71,21 +119,5 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public long countOrders() {
         return orderRepository.count();
-    }
-
-    private OrderModel convertToModel(OrderEntity entity) {
-        return new OrderModel(
-                entity.getId(),
-                entity.getBookingDate(),
-                entity.getStatus()
-        );
-    }
-
-    private OrderEntity convertToEntity(OrderModel model) {
-        return new OrderEntity(
-                model.getId(),
-                model.getBookingDate(),
-                model.getStatus()
-        );
     }
 }
