@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -49,7 +48,15 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
-        UserEntity entity = convertToEntity(user);
+        // Не устанавливаем ID - он сгенерируется автоматически
+        UserEntity entity = new UserEntity();
+        entity.setName(user.getName());
+        entity.setSurname(user.getSurname());
+        entity.setLastName(user.getLastName());
+        entity.setPhoneNum(user.getPhoneNum());
+        entity.setLogin(user.getLogin());
+        entity.setPassword(user.getPassword());
+
         UserEntity saved = userRepository.save(entity);
         return convertToModel(saved);
     }

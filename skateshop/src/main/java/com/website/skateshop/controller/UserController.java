@@ -53,7 +53,15 @@ public class UserController {
                           @RequestParam String phoneNum,
                           @RequestParam String login,
                           @RequestParam String password) {
-        UserModel newUser = new UserModel(0, name, surname, lastName, phoneNum, login, password);
+        UserModel newUser = new UserModel();
+        // Не устанавливаем ID!
+        newUser.setName(name);
+        newUser.setSurname(surname);
+        newUser.setLastName(lastName);
+        newUser.setPhoneNum(phoneNum);
+        newUser.setLogin(login);
+        newUser.setPassword(password);
+
         userService.addUser(newUser);
         return "redirect:/users";
     }

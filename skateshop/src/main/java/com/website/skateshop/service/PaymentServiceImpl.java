@@ -47,15 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentModel addPayment(PaymentModel paymentModel) {
-        PaymentEntity entity = new PaymentEntity();
-        entity.setPrice(paymentModel.getPrice());
-        entity.setMethod(paymentModel.getMethod());
-        entity.setPaymentDate(paymentModel.getPaymentDate());
-
-        UserEntity user = userRepository.findById(paymentModel.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        entity.setUser(user);
-
+        PaymentEntity entity = convertToEntity(paymentModel);
         PaymentEntity saved = paymentRepository.save(entity);
         return convertToModel(saved);
     }
@@ -68,12 +60,6 @@ public class PaymentServiceImpl implements PaymentService {
         entity.setPrice(paymentModel.getPrice());
         entity.setMethod(paymentModel.getMethod());
         entity.setPaymentDate(paymentModel.getPaymentDate());
-
-        if (!entity.getUser().getId().equals(paymentModel.getUserId())) {
-            UserEntity user = userRepository.findById(paymentModel.getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            entity.setUser(user);
-        }
 
         PaymentEntity updated = paymentRepository.save(entity);
         return convertToModel(updated);
@@ -104,9 +90,9 @@ public class PaymentServiceImpl implements PaymentService {
         model.setMethod(entity.getMethod());
         model.setPaymentDate(entity.getPaymentDate());
 
-        // Add null check for user
         if (entity.getUser() != null) {
             model.setUserId(entity.getUser().getId());
+            model.setUserName(entity.getUser().getName() + " " + entity.getUser().getSurname());
         }
 
         return model;
@@ -119,7 +105,6 @@ public class PaymentServiceImpl implements PaymentService {
         entity.setMethod(model.getMethod());
         entity.setPaymentDate(model.getPaymentDate());
 
-        // Only set user if userId is provided
         if (model.getUserId() != null) {
             UserEntity user = userRepository.findById(model.getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));

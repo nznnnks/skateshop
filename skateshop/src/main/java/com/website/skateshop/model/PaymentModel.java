@@ -11,13 +11,25 @@ public class PaymentModel {
     private Integer price;
 
     @NotBlank(message = "Метод оплаты обязателен")
-    @Size(max = 10, message = "Метод оплаты не длиннее 10 символов")
     private String method;
 
     @NotNull(message = "Дата платежа обязательна")
     private LocalDate paymentDate;
 
+    // Связь с User
     private Integer userId;
+    private String userName;
+
+    // Конструкторы
+    public PaymentModel() {
+    }
+
+    public PaymentModel(Integer id, Integer price, String method, LocalDate paymentDate) {
+        this.id = id;
+        this.price = price;
+        this.method = method;
+        this.paymentDate = paymentDate;
+    }
 
     // Геттеры и сеттеры
     public Integer getId() {
@@ -58,5 +70,13 @@ public class PaymentModel {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
