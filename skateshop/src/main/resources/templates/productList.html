@@ -8,6 +8,8 @@
 <body>
 <h1>Список товаров</h1>
 
+<div th:if="${error}" class="error-message" th:text="${error}"></div>
+
 <form action="/products/add" method="post">
   <input type="text" name="productTitle" placeholder="Название" required>
   <input type="number" name="price" placeholder="Цена" min="1" required>
@@ -44,14 +46,39 @@
 <ul>
   <th:block th:each="product : ${products}">
     <li>
-      <span th:text="${product.productTitle} + ' (Цена: ' + ${product.price} + ', Количество: ' + ${product.quantity} + ')'"></span>
+      <span th:text="'Название: ' + ${product.productTitle} +
+                   ' | Цена: ' + ${product.price} +
+                   ' | Количество: ' + ${product.quantity} +
+                   ' | Бренд: ' + ${product.brandName ?: 'Не указан'} +
+                   ' | Категория: ' + ${product.categoryName ?: 'Не указана'}"></span>
+
       <form action="/products/update" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${product.id}"/>
         <input type="text" name="productTitle" th:value="${product.productTitle}" placeholder="Название" required/>
         <input type="number" name="price" th:value="${product.price}" placeholder="Цена" min="1" required/>
         <input type="number" name="quantity" th:value="${product.quantity}" placeholder="Количество" min="1" required/>
+
+        <select name="brandId" required>
+          <option value="">Выберите бренд</option>
+          <th:block th:each="brand : ${brands}">
+            <option th:value="${brand.id}"
+                    th:text="${brand.name}"
+                    th:selected="${brand.id == product.brandId}"></option>
+          </th:block>
+        </select>
+
+        <select name="categoryId" required>
+          <option value="">Выберите категорию</option>
+          <th:block th:each="category : ${categories}">
+            <option th:value="${category.id}"
+                    th:text="${category.name}"
+                    th:selected="${category.id == product.categoryId}"></option>
+          </th:block>
+        </select>
+
         <button type="submit">Обновить</button>
       </form>
+
       <form action="/products/delete" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${product.id}"/>
         <button type="submit">Удалить</button>

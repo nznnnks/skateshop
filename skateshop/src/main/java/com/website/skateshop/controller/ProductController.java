@@ -28,6 +28,11 @@ public class ProductController {
     public String getAllProducts(Model model,
                                  @RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "10") int size) {
+        // Проверяем, есть ли бренды и категории перед отображением
+        if (brandService.findAllBrands().isEmpty() || categoryService.findAllCategories().isEmpty()) {
+            model.addAttribute("error", "Перед добавлением товаров необходимо создать хотя бы один бренд и одну категорию");
+        }
+
         model.addAttribute("products", productService.findProductsPaginated(page, size));
         model.addAttribute("brands", brandService.findAllBrands());
         model.addAttribute("categories", categoryService.findAllCategories());
