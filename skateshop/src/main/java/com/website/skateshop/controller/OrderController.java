@@ -16,13 +16,10 @@ import java.util.List;
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
-
     @Autowired
     private OrderService orderService;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private PaymentService paymentService;
 
@@ -66,10 +63,12 @@ public class OrderController {
                            @RequestParam Integer userId,
                            @RequestParam Integer paymentId) {
         OrderModel newOrder = new OrderModel();
+        newOrder.setId(null); // Явно устанавливаем null для нового заказа
         newOrder.setBookingDate(LocalDate.parse(bookingDate, DATE_FORMATTER));
         newOrder.setStatus(status);
         newOrder.setUserId(userId);
         newOrder.setPaymentId(paymentId);
+
         orderService.addOrder(newOrder);
         return "redirect:/orders";
     }
@@ -86,6 +85,7 @@ public class OrderController {
         updatedOrder.setStatus(status);
         updatedOrder.setUserId(userId);
         updatedOrder.setPaymentId(paymentId);
+
         orderService.updateOrder(updatedOrder);
         return "redirect:/orders";
     }

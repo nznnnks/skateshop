@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
@@ -34,47 +33,6 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
-    private OrderModel convertToModel(OrderEntity entity) {
-        OrderModel model = new OrderModel();
-        model.setId(entity.getId());
-        model.setBookingDate(entity.getBookingDate());
-        model.setStatus(entity.getStatus());
-
-        if (entity.getUser() != null) {
-            model.setUserId(entity.getUser().getId());
-            model.setUserName(entity.getUser().getName() + " " + entity.getUser().getSurname());
-        }
-
-        if (entity.getPayment() != null) {
-            model.setPaymentId(entity.getPayment().getId());
-            model.setPaymentMethod(entity.getPayment().getMethod());
-        }
-
-        return model;
-    }
-
-    private OrderEntity convertToEntity(OrderModel model) {
-        OrderEntity entity = new OrderEntity();
-        entity.setId(model.getId());
-        entity.setBookingDate(model.getBookingDate());
-        entity.setStatus(model.getStatus());
-
-        if (model.getUserId() != null) {
-            UserEntity user = userRepository.findById(model.getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            entity.setUser(user);
-        }
-
-        if (model.getPaymentId() != null) {
-            PaymentEntity payment = paymentRepository.findById(model.getPaymentId())
-                    .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
-            entity.setPayment(payment);
-        }
-
-        return entity;
-    }
-
-    // Остальные методы остаются без изменений
     @Override
     public OrderModel findOrderById(int id) {
         return orderRepository.findById(id)
@@ -98,7 +56,24 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderModel updateOrder(OrderModel order) {
-        OrderEntity entity = convertToEntity(order);
+        OrderEntity entity = orderRepository.findById(order.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        entity.setBookingDate(order.getBookingDate());
+        entity.setStatus(order.getStatus());
+
+        if (order.getUserId() != null) {
+            UserEntity user = userRepository.findById(order.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            entity.setUser(user);
+        }
+
+        if (order.getPaymentId() != null) {
+            PaymentEntity payment = paymentRepository.findById(order.getPaymentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+            entity.setPayment(payment);
+        }
+
         OrderEntity updated = orderRepository.save(entity);
         return convertToModel(updated);
     }
@@ -119,5 +94,46 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public long countOrders() {
         return orderRepository.count();
+    }
+
+    private OrderModel convertToModel(OrderEntity entity) {
+        OrderModel model = new OrderModel();
+        model.setId(entity.getId());
+        model.setBookingDate(entity.getBookingDate());
+        model.setStatus(entity.getStatus());
+
+        if (entity.getUser() != null) {
+            model.setUserId(entity.getUser().getId());
+            model.setUserName(entity.getUser().getName() + " " + entity.getUser().getSurname());
+        }
+
+        if (entity.getPayment() != null) {
+            model.setPaymentId(entity.getPayment().getId());
+            model.setPaymentMethod(entity.getPayment().getMethod());
+        }
+
+        return model;
+    }
+
+    private OrderEntity convertToEntity(OrderModel model) {
+        OrderEntity entity = new OrderEntity();
+        entity.setId(model.getId()); // Теперь можно передавать null
+
+        entity.setBookingDate(model.getBookingDate());
+        entity.setStatus(model.getStatus());
+
+        if (model.getUserId() != null) {
+            UserEntity user = userRepository.findById(model.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            entity.setUser(user);
+        }
+
+        if (model.getPaymentId() != null) {
+            PaymentEntity payment = paymentRepository.findById(model.getPaymentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+            entity.setPayment(payment);
+        }
+
+        return entity;
     }
 }

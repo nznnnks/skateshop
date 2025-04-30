@@ -29,7 +29,6 @@ public class OrderEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewEntity> reviews = new ArrayList<>();
 
-    // Constructors, getters, and setters
     public OrderEntity() {
     }
 
@@ -38,7 +37,7 @@ public class OrderEntity {
         this.status = status;
     }
 
-    // Add all getters and setters for the fields
+    // Геттеры и сеттеры
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public LocalDate getBookingDate() { return bookingDate; }
@@ -52,7 +51,6 @@ public class OrderEntity {
     public List<ReviewEntity> getReviews() { return reviews; }
     public void setReviews(List<ReviewEntity> reviews) { this.reviews = reviews; }
 
-    // Methods for managing relationships
     public void addReview(ReviewEntity review) {
         reviews.add(review);
         review.setOrder(this);

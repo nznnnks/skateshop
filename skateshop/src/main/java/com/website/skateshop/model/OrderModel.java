@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public class OrderModel {
-    private int id;
+    private Integer id; // Изменено с int на Integer
 
     @NotNull(message = "Дата заказа не может быть пустой")
     private LocalDate bookingDate;
@@ -18,19 +18,17 @@ public class OrderModel {
     private Integer paymentId;
     private String paymentMethod;
 
-    // Конструктор по умолчанию
     public OrderModel() {}
 
-    // Конструктор с параметрами
-    public OrderModel(int id, LocalDate bookingDate, String status) {
+    public OrderModel(Integer id, LocalDate bookingDate, String status) { // Изменено на Integer
         this.id = id;
         this.bookingDate = bookingDate;
         this.status = status;
     }
 
     // Геттеры и сеттеры
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Integer getId() { return id; } // Изменено на Integer
+    public void setId(Integer id) { this.id = id; } // Изменено на Integer
     public LocalDate getBookingDate() { return bookingDate; }
     public void setBookingDate(LocalDate bookingDate) { this.bookingDate = bookingDate; }
     public String getStatus() { return status; }
