@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список товаров в заказах</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+</head>
+<body>
+<h1>Список товаров в заказах</h1>
+
+<form action="/product-orders/add" method="post">
+  <input type="number" name="quantity" placeholder="Количество" min="1" required>
+
+  <select name="productId" required>
+    <option value="">Выберите товар</option>
+    <th:block th:each="product : ${products}">
+      <option th:value="${product.id}"
+              th:text="${product.productTitle} + ' (ID: ' + ${product.id} + ')'"></option>
+    </th:block>
+  </select>
+
+  <select name="orderId" required>
+    <option value="">Выберите заказ</option>
+    <th:block th:each="order : ${orders}">
+      <option th:value="${order.id}"
+              th:text="'Заказ #' + ${order.id} + ' (' + ${order.bookingDate} + ')'"></option>
+    </th:block>
+  </select>
+
+  <button type="submit">Добавить</button>
+</form>
+
+<form action="/product-orders/searchById" method="get">
+  <input type="number" name="id" placeholder="ID записи" required>
+  <button type="submit">Найти по ID</button>
+</form>
+
+<form action="/product-orders/searchByOrder" method="get">
+  <input type="number" name="orderId" placeholder="ID заказа" required>
+  <button type="submit">Найти по заказу</button>
+</form>
+
+<form action="/product-orders/searchByProduct" method="get">
+  <input type="number" name="productId" placeholder="ID товара" required>
+  <button type="submit">Найти по товару</button>
+</form>
+
+<h2>Все записи:</h2>
+<ul>
+  <th:block th:each="po : ${productOrders}">
+    <li>
+      <span th:text="'ID: ' + ${po.id} +
+                   ' | Количество: ' + ${po.quantity} +
+                   ' | Товар: ' + ${po.productTitle} +
+                   ' | Заказ: ' + ${po.orderInfo}"></span>
+
+      <form action="/product-orders/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${po.id}"/>
+        <input type="number" name="quantity" th:value="${po.quantity}" min="1" required/>
+
+        <select name="productId" required>
+          <option th:each="product : ${products}"
+                  th:value="${product.id}"
+                  th:text="${product.productTitle} + ' (ID: ' + ${product.id} + ')'"
+                  th:selected="${product.id == po.productId}"></option>
+        </select>
+
+        <select name="orderId" required>
+          <option th:each="order : ${orders}"
+                  th:value="${order.id}"
+                  th:text="'Заказ #' + ${order.id} + ' (' + ${order.bookingDate} + ')'"
+                  th:selected="${order.id == po.orderId}"></option>
+        </select>
+
+        <button type="submit">Обновить</button>
+      </form>
+
+      <form action="/product-orders/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${po.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<div th:if="${totalPages > 0}">
+  <span>Страница: </span>
+  <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+    <a th:href="@{/product-orders(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+  </th:block>
+</div>
+<div th:if="${productOrders.isEmpty()}">
+  <p>Записи не найдены.</p>
+</div>
+</body>
+</html>
