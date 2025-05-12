@@ -2,6 +2,8 @@ package com.website.skateshop.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -34,7 +36,9 @@ public class ProductEntity {
     @JoinColumn(name = "category_id", nullable = true)
     private CategoryEntity category;
 
-    // Геттеры и сеттеры
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductOrderEntity> productOrders = new ArrayList<>();
+
     public Integer getId() {
         return id;
     }
@@ -81,5 +85,13 @@ public class ProductEntity {
 
     public void setCategory(CategoryEntity category) {
         this.category = category;
+    }
+
+    public List<ProductOrderEntity> getProductOrders() {
+        return productOrders;
+    }
+
+    public void setProductOrders(List<ProductOrderEntity> productOrders) {
+        this.productOrders = productOrders;
     }
 }

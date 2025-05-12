@@ -1,6 +1,8 @@
 package com.website.skateshop.service;
 
-import com.website.skateshop.entity.*;
+import com.website.skateshop.entity.ProductEntity;
+import com.website.skateshop.entity.ProductOrderEntity;
+import com.website.skateshop.entity.OrderEntity;
 import com.website.skateshop.model.ProductOrderModel;
 import com.website.skateshop.repository.ProductOrderRepository;
 import com.website.skateshop.repository.ProductRepository;
@@ -34,63 +36,56 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     }
 
     @Override
-    public ProductOrderModel findProductOrderById(int id) {
+    public ProductOrderModel findProductOrderById(Integer id) {
         return productOrderRepository.findById(id)
                 .map(this::convertToModel)
                 .orElse(null);
     }
 
     @Override
-    public List<ProductOrderModel> findProductOrdersByOrderId(int orderId) {
+    public List<ProductOrderModel> findByOrderId(Integer orderId) {
         return productOrderRepository.findByOrderId(orderId).stream()
                 .map(this::convertToModel)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ProductOrderModel> findProductOrdersByProductId(int productId) {
+    public List<ProductOrderModel> findByProductId(Integer productId) {
         return productOrderRepository.findByProductId(productId).stream()
                 .map(this::convertToModel)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ProductOrderModel addProductOrder(ProductOrderModel productOrder) {
-        ProductOrderEntity entity = convertToEntity(productOrder);
-        ProductOrderEntity saved = productOrderRepository.save(entity);
-        return convertToModel(saved);
+    public ProductOrderModel addProductOrder(ProductOrderModel productOrderModel) {
+        ProductOrderEntity entity = convertToEntity(productOrderModel);
+        ProductOrderEntity savedEntity = productOrderRepository.save(entity);
+        return convertToModel(savedEntity);
     }
 
     @Override
-    public ProductOrderModel updateProductOrder(ProductOrderModel productOrder) {
-        ProductOrderEntity entity = productOrderRepository.findById(productOrder.getId())
-                .orElseThrow(() -> new IllegalArgumentException("ProductOrder not found"));
+    public ProductOrderModel updateProductOrder(ProductOrderModel productOrderModel) {
+        ProductOrderEntity entity = productOrderRepository.findById(productOrderModel.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Product order not found"));
 
-        entity.setQuantity(productOrder.getQuantity());
+        entity.setQuantity(productOrderModel.getQuantity());
 
-        if (productOrder.getProductId() != null) {
-            ProductEntity product = productRepository.findById(productOrder.getProductId())
-                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-            entity.setProduct(product);
-        }
-
-        if (productOrder.getOrderId() != null) {
-            OrderEntity order = orderRepository.findById(productOrder.getOrderId())
-                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-            entity.setOrder(order);
-        }
-
-        ProductOrderEntity updated = productOrderRepository.save(entity);
-        return convertToModel(updated);
+        ProductOrderEntity updatedEntity = productOrderRepository.save(entity);
+        return convertToModel(updatedEntity);
     }
 
     @Override
-    public void deleteProductOrder(int id) {
+    public void deleteProductOrder(Integer id) {
         productOrderRepository.deleteById(id);
     }
 
     @Override
-    public List<ProductOrderModel> findProductOrdersPaginated(int page, int size) {
+    public void deleteByOrderId(Integer orderId) {
+        productOrderRepository.deleteByOrderId(orderId);
+    }
+
+    @Override
+    public List<ProductOrderModel> findProductOrdersPaginated(Integer page, Integer size) {
         return productOrderRepository.findAll(PageRequest.of(page, size)).getContent().stream()
                 .map(this::convertToModel)
                 .collect(Collectors.toList());
@@ -104,39 +99,26 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     private ProductOrderModel convertToModel(ProductOrderEntity entity) {
         ProductOrderModel model = new ProductOrderModel();
         model.setId(entity.getId());
+        model.setProductId(entity.getProduct().getId());
+        model.setProductTitle(entity.getProduct().getProductTitle());
+        model.setOrderId(entity.getOrder().getId());
         model.setQuantity(entity.getQuantity());
-
-        if (entity.getProduct() != null) {
-            model.setProductId(entity.getProduct().getId());
-            model.setProductTitle(entity.getProduct().getProductTitle());
-        }
-
-        if (entity.getOrder() != null) {
-            model.setOrderId(entity.getOrder().getId());
-            model.setOrderInfo("Заказ #" + entity.getOrder().getId() +
-                    " (" + entity.getOrder().getBookingDate() + ")");
-        }
-
         return model;
     }
 
     private ProductOrderEntity convertToEntity(ProductOrderModel model) {
         ProductOrderEntity entity = new ProductOrderEntity();
         entity.setId(model.getId());
+
+        ProductEntity product = productRepository.findById(model.getProductId())
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+        entity.setProduct(product);
+
+        OrderEntity order = orderRepository.findById(model.getOrderId())
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        entity.setOrder(order);
+
         entity.setQuantity(model.getQuantity());
-
-        if (model.getProductId() != null) {
-            ProductEntity product = productRepository.findById(model.getProductId())
-                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-            entity.setProduct(product);
-        }
-
-        if (model.getOrderId() != null) {
-            OrderEntity order = orderRepository.findById(model.getOrderId())
-                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-            entity.setOrder(order);
-        }
-
         return entity;
     }
 }

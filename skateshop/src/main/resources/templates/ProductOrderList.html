@@ -2,95 +2,110 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Список товаров в заказах</title>
+  <title>Связи товаров и заказов</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
 </head>
 <body>
-<h1>Список товаров в заказах</h1>
+<h1>Управление связями товаров и заказов</h1>
 
+<!-- Форма добавления новой связи -->
 <form action="/product-orders/add" method="post">
-  <input type="number" name="quantity" placeholder="Количество" min="1" required>
+  <h2>Добавить новую связь:</h2>
+  <div>
+    <label>Товар:</label>
+    <select name="productId" required>
+      <option value="">Выберите товар</option>
+      <th:block th:each="product : ${productService.findAllProducts()}">
+        <option th:value="${product.id}" th:text="${product.productTitle}"></option>
+      </th:block>
+    </select>
+  </div>
 
-  <select name="productId" required>
-    <option value="">Выберите товар</option>
-    <th:block th:each="product : ${products}">
-      <option th:value="${product.id}"
-              th:text="${product.productTitle} + ' (ID: ' + ${product.id} + ')'"></option>
-    </th:block>
-  </select>
+  <div>
+    <label>Заказ:</label>
+    <select name="orderId" required>
+      <option value="">Выберите заказ</option>
+      <th:block th:each="order : ${orderService.findAllOrders()}">
+        <option th:value="${order.id}" th:text="'Заказ #' + ${order.id}"></option>
+      </th:block>
+    </select>
+  </div>
 
-  <select name="orderId" required>
-    <option value="">Выберите заказ</option>
-    <th:block th:each="order : ${orders}">
-      <option th:value="${order.id}"
-              th:text="'Заказ #' + ${order.id} + ' (' + ${order.bookingDate} + ')'"></option>
-    </th:block>
-  </select>
+  <div>
+    <label>Количество:</label>
+    <input type="number" name="quantity" placeholder="Количество" min="1" required>
+  </div>
 
-  <button type="submit">Добавить</button>
+  <button type="submit">Добавить связь</button>
 </form>
 
-<form action="/product-orders/searchById" method="get">
-  <input type="number" name="id" placeholder="ID записи" required>
-  <button type="submit">Найти по ID</button>
-</form>
+<!-- Формы поиска -->
+<div class="search-forms">
+  <form action="/product-orders/searchById" method="get">
+    <h3>Поиск по ID связи:</h3>
+    <input type="number" name="id" placeholder="ID связи" required>
+    <button type="submit">Найти</button>
+  </form>
 
-<form action="/product-orders/searchByOrder" method="get">
-  <input type="number" name="orderId" placeholder="ID заказа" required>
-  <button type="submit">Найти по заказу</button>
-</form>
+  <form action="/product-orders/searchByOrderId" method="get">
+    <h3>Поиск по заказу:</h3>
+    <input type="number" name="orderId" placeholder="ID заказа" required>
+    <button type="submit">Найти</button>
+  </form>
 
-<form action="/product-orders/searchByProduct" method="get">
-  <input type="number" name="productId" placeholder="ID товара" required>
-  <button type="submit">Найти по товару</button>
-</form>
+  <form action="/product-orders/searchByProductId" method="get">
+    <h3>Поиск по товару:</h3>
+    <input type="number" name="productId" placeholder="ID товара" required>
+    <button type="submit">Найти</button>
+  </form>
+</div>
 
-<h2>Все записи:</h2>
-<ul>
-  <th:block th:each="po : ${productOrders}">
-    <li>
-      <span th:text="'ID: ' + ${po.id} +
-                   ' | Количество: ' + ${po.quantity} +
-                   ' | Товар: ' + ${po.productTitle} +
-                   ' | Заказ: ' + ${po.orderInfo}"></span>
-
+<!-- Таблица со списком связей -->
+<h2>Список связей:</h2>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Товар</th>
+    <th>Заказ</th>
+    <th>Количество</th>
+    <th>Действия</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="productOrder : ${productOrders}">
+    <td th:text="${productOrder.id}"></td>
+    <td th:text="${productOrder.productTitle} + ' (ID: ' + ${productOrder.productId} + ')'"></td>
+    <td th:text="'Заказ #' + ${productOrder.orderId}"></td>
+    <td th:text="${productOrder.quantity}"></td>
+    <td>
       <form action="/product-orders/update" method="post" style="display:inline;">
-        <input type="hidden" name="id" th:value="${po.id}"/>
-        <input type="number" name="quantity" th:value="${po.quantity}" min="1" required/>
-
-        <select name="productId" required>
-          <option th:each="product : ${products}"
-                  th:value="${product.id}"
-                  th:text="${product.productTitle} + ' (ID: ' + ${product.id} + ')'"
-                  th:selected="${product.id == po.productId}"></option>
-        </select>
-
-        <select name="orderId" required>
-          <option th:each="order : ${orders}"
-                  th:value="${order.id}"
-                  th:text="'Заказ #' + ${order.id} + ' (' + ${order.bookingDate} + ')'"
-                  th:selected="${order.id == po.orderId}"></option>
-        </select>
-
+        <input type="hidden" name="id" th:value="${productOrder.id}"/>
+        <input type="number" name="quantity" th:value="${productOrder.quantity}" min="1" required style="width: 60px;"/>
         <button type="submit">Обновить</button>
       </form>
-
       <form action="/product-orders/delete" method="post" style="display:inline;">
-        <input type="hidden" name="id" th:value="${po.id}"/>
+        <input type="hidden" name="id" th:value="${productOrder.id}"/>
         <button type="submit">Удалить</button>
       </form>
-    </li>
-  </th:block>
-</ul>
+    </td>
+  </tr>
+  </tbody>
+</table>
 
-<div th:if="${totalPages > 0}">
-  <span>Страница: </span>
+<!-- Пагинация -->
+<div th:if="${totalPages > 0}" class="pagination">
+  <span>Страницы: </span>
   <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-    <a th:href="@{/product-orders(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+    <a th:href="@{/product-orders(page=${i}, size=${size})}"
+       th:text="${i + 1}"
+       th:class="${i == currentPage} ? 'active' : ''"></a>
   </th:block>
 </div>
+
 <div th:if="${productOrders.isEmpty()}">
-  <p>Записи не найдены.</p>
+  <p>Связи между товарами и заказами не найдены.</p>
 </div>
+
 </body>
 </html>

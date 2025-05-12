@@ -1,38 +1,29 @@
 package com.website.skateshop.model;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
 public class ProductOrderModel {
     private Integer id;
-
-    @NotNull(message = "Количество не может быть пустым")
-    @Positive(message = "Количество должно быть положительным")
-    private Integer quantity;
-
-    @NotNull(message = "Товар не может быть пустым")
     private Integer productId;
     private String productTitle;
-
-    @NotNull(message = "Заказ не может быть пустым")
     private Integer orderId;
-    private String orderInfo;
+    private Integer quantity;
 
-    // Геттеры и сеттеры
+    public ProductOrderModel() {
+    }
+
+    public ProductOrderModel(Integer id, Integer productId, String productTitle, Integer orderId, Integer quantity) {
+        this.id = id;
+        this.productId = productId;
+        this.productTitle = productTitle;
+        this.orderId = orderId;
+        this.quantity = quantity;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
 
     public Integer getProductId() {
@@ -59,11 +50,11 @@ public class ProductOrderModel {
         this.orderId = orderId;
     }
 
-    public String getOrderInfo() {
-        return orderInfo;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setOrderInfo(String orderInfo) {
-        this.orderInfo = orderInfo;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

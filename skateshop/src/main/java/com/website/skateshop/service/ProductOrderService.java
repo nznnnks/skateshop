@@ -5,12 +5,13 @@ import java.util.List;
 
 public interface ProductOrderService {
     List<ProductOrderModel> findAllProductOrders();
-    ProductOrderModel findProductOrderById(int id);
-    List<ProductOrderModel> findProductOrdersByOrderId(int orderId);
-    List<ProductOrderModel> findProductOrdersByProductId(int productId);
-    ProductOrderModel addProductOrder(ProductOrderModel productOrder);
-    ProductOrderModel updateProductOrder(ProductOrderModel productOrder);
-    void deleteProductOrder(int id);
-    List<ProductOrderModel> findProductOrdersPaginated(int page, int size);
+    ProductOrderModel findProductOrderById(Integer id);
+    List<ProductOrderModel> findByOrderId(Integer orderId);
+    List<ProductOrderModel> findByProductId(Integer productId);
+    ProductOrderModel addProductOrder(ProductOrderModel productOrderModel);
+    ProductOrderModel updateProductOrder(ProductOrderModel productOrderModel);
+    void deleteProductOrder(Integer id);
+    void deleteByOrderId(Integer orderId);
+    List<ProductOrderModel> findProductOrdersPaginated(Integer page, Integer size);
     long countProductOrders();
 }
