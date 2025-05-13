@@ -18,12 +18,11 @@ public class ProductModel {
     private Integer quantity;
 
     private Integer brandId;
-    private String brandName; // Новое поле
+    private String brandName;
 
     private Integer categoryId;
-    private String categoryName; // Новое поле
+    private String categoryName;
 
-    // Геттеры и сеттеры для всех полей
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getProductTitle() { return productTitle; }

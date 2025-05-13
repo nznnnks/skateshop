@@ -19,17 +19,14 @@ public class ReviewEntity {
     @Column(name = "reviewdate", nullable = false)
     private LocalDate reviewDate;
 
-    // Существующая связь с User
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clientid", nullable = true)
     private UserEntity user;
 
-    // Новая связь с Order
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = true)
     private OrderEntity order;
 
-    // Геттеры и сеттеры
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getReviewTitle() { return reviewTitle; }

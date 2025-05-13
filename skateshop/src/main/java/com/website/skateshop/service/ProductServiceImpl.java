@@ -63,14 +63,12 @@ public class ProductServiceImpl implements ProductService {
         entity.setPrice(productModel.getPrice());
         entity.setQuantity(productModel.getQuantity());
 
-        // Обновляем бренд, если он изменился
         if (productModel.getBrandId() != null) {
             BrandEntity brand = brandRepository.findById(productModel.getBrandId())
                     .orElseThrow(() -> new IllegalArgumentException("Brand not found"));
             entity.setBrand(brand);
         }
 
-        // Обновляем категорию, если она изменилась
         if (productModel.getCategoryId() != null) {
             CategoryEntity category = categoryRepository.findById(productModel.getCategoryId())
                     .orElseThrow(() -> new IllegalArgumentException("Category not found"));
@@ -125,14 +123,12 @@ public class ProductServiceImpl implements ProductService {
         entity.setPrice(model.getPrice());
         entity.setQuantity(model.getQuantity());
 
-        // Устанавливаем бренд, если указан
         if (model.getBrandId() != null) {
             BrandEntity brand = brandRepository.findById(model.getBrandId())
                     .orElseThrow(() -> new IllegalArgumentException("Brand not found"));
             entity.setBrand(brand);
         }
 
-        // Устанавливаем категорию, если указана
         if (model.getCategoryId() != null) {
             CategoryEntity category = categoryRepository.findById(model.getCategoryId())
                     .orElseThrow(() -> new IllegalArgumentException("Category not found"));

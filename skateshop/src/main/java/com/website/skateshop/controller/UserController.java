@@ -54,7 +54,6 @@ public class UserController {
                           @RequestParam String login,
                           @RequestParam String password) {
         UserModel newUser = new UserModel();
-        // Не устанавливаем ID!
         newUser.setName(name);
         newUser.setSurname(surname);
         newUser.setLastName(lastName);

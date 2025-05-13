@@ -117,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderEntity convertToEntity(OrderModel model) {
         OrderEntity entity = new OrderEntity();
-        entity.setId(model.getId()); // Теперь можно передавать null
+        entity.setId(model.getId());
 
         entity.setBookingDate(model.getBookingDate());
         entity.setStatus(model.getStatus());

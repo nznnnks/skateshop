@@ -28,11 +28,9 @@ public class PaymentEntity {
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderEntity> orders;
 
-    // Конструкторы
     public PaymentEntity() {
     }
 
-    // Геттеры и сеттеры
     public Integer getId() {
         return id;
     }

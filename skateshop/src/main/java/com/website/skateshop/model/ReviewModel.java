@@ -18,15 +18,12 @@ public class ReviewModel {
     @NotNull(message = "Дата отзыва не может быть пустой")
     private LocalDate reviewDate;
 
-    // Существующая связь с User
     private Integer userId;
     private String userName;
 
-    // Новая связь с Order
     private Integer orderId;
-    private String orderInfo; // Например: "Заказ #123 (2023-10-01)"
+    private String orderInfo;
 
-    // Геттеры и сеттеры
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getReviewTitle() { return reviewTitle; }

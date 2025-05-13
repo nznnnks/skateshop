@@ -91,13 +91,11 @@ public class ReviewServiceImpl implements ReviewService {
         model.setRating(entity.getRating());
         model.setReviewDate(entity.getReviewDate());
 
-        // Связь с User
         if (entity.getUser() != null) {
             model.setUserId(entity.getUser().getId());
             model.setUserName(entity.getUser().getName() + " " + entity.getUser().getSurname());
         }
 
-        // Связь с Order
         if (entity.getOrder() != null) {
             model.setOrderId(entity.getOrder().getId());
             model.setOrderInfo("Заказ #" + entity.getOrder().getId() +
@@ -114,14 +112,12 @@ public class ReviewServiceImpl implements ReviewService {
         entity.setRating(model.getRating());
         entity.setReviewDate(model.getReviewDate());
 
-        // Связь с User
         if (model.getUserId() != null) {
             UserEntity user = userRepository.findById(model.getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
             entity.setUser(user);
         }
 
-        // Связь с Order
         if (model.getOrderId() != null) {
             OrderEntity order = orderRepository.findById(model.getOrderId())
                     .orElseThrow(() -> new IllegalArgumentException("Order not found"));

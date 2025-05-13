@@ -18,16 +18,13 @@ public class CategoryEntity {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductEntity> products = new ArrayList<>();
 
-    // Конструкторы
     public CategoryEntity() {
-        // Пустой конструктор требуется JPA
     }
 
     public CategoryEntity(String name) {
         this.name = name;
     }
 
-    // Геттеры и сеттеры
     public Integer getId() {
         return id;
     }

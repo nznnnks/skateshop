@@ -17,7 +17,6 @@
   </select>
   <input type="date" name="paymentDate" placeholder="Дата платежа" required>
 
-  <!-- Добавлен выбор пользователя -->
   <select name="userId" required>
     <option value="">Выберите пользователя</option>
     <option th:each="user : ${users}"
@@ -60,7 +59,6 @@
         </select>
         <input type="date" name="paymentDate" th:value="${payment.paymentDate}" placeholder="Дата платежа" required/>
 
-        <!-- Добавлен выбор пользователя при редактировании -->
         <select name="userId" required>
           <option th:each="user : ${users}"
                   th:value="${user.id}"

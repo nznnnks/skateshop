@@ -27,7 +27,6 @@ public class UserModel {
     @NotBlank(message = "Пароль не может быть пустым")
     private String password;
 
-    // Конструкторы
     public UserModel() {
     }
 
@@ -42,7 +41,6 @@ public class UserModel {
         this.password = password;
     }
 
-    // Геттеры и сеттеры
     public Integer getId() {
         return id;
     }

@@ -13,7 +13,6 @@
   <input type="number" name="rating" placeholder="Рейтинг (1-5)" min="1" max="5" required>
   <input type="date" name="reviewDate" placeholder="Дата отзыва">
 
-  <!-- Выбор пользователя -->
   <select name="userId" required>
     <option value="">Выберите пользователя</option>
     <th:block th:each="user : ${users}">
@@ -21,7 +20,6 @@
     </th:block>
   </select>
 
-  <!-- Выбор заказа -->
   <select name="orderId" required>
     <option value="">Выберите заказ</option>
     <th:block th:each="order : ${orders}">
@@ -42,7 +40,6 @@
                    ', Дата: ' + ${review.reviewDate} +
                    ', Автор: ' + ${review.userName} +
                    ', Заказ: ' + ${review.orderInfo}"></span>
-      <!-- Форма для обновления -->
       <form action="/reviews/update" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${review.id}"/>
         <input type="text" name="reviewTitle" th:value="${review.reviewTitle}" required maxlength="200"/>
@@ -62,7 +59,6 @@
         </select>
         <button type="submit">Обновить</button>
       </form>
-      <!-- Форма для удаления -->
       <form action="/reviews/delete" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${review.id}"/>
         <button type="submit">Удалить</button>
@@ -71,7 +67,6 @@
   </th:block>
 </ul>
 
-<!-- Пагинация -->
 <div th:if="${totalPages > 0}">
   <span>Страница: </span>
   <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">

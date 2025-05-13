@@ -33,7 +33,7 @@ public class ReviewController {
                                 @RequestParam(defaultValue = "10") int size) {
         model.addAttribute("reviews", reviewService.findReviewsPaginated(page, size));
         model.addAttribute("users", userService.findAllUsers());
-        model.addAttribute("orders", orderService.findAllOrders()); // Добавляем список заказов
+        model.addAttribute("orders", orderService.findAllOrders());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) reviewService.countReviews() / size));
         return "reviewList";

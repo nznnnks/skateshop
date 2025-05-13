@@ -12,7 +12,6 @@ public class CategoryModel {
         this.name = name;
     }
 
-    // Геттеры и сеттеры
     public int getId() {
         return id;
     }

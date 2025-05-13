@@ -16,11 +16,9 @@ public class PaymentModel {
     @NotNull(message = "Дата платежа обязательна")
     private LocalDate paymentDate;
 
-    // Связь с User
     private Integer userId;
     private String userName;
 
-    // Конструкторы
     public PaymentModel() {
     }
 
@@ -31,7 +29,6 @@ public class PaymentModel {
         this.paymentDate = paymentDate;
     }
 
-    // Геттеры и сеттеры
     public Integer getId() {
         return id;
     }

@@ -18,16 +18,13 @@ public class BrandEntity {
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductEntity> products = new ArrayList<>();
 
-    // Конструкторы
     public BrandEntity() {
-        // Пустой конструктор требуется JPA
     }
 
     public BrandEntity(String name) {
         this.name = name;
     }
 
-    // Геттеры и сеттеры
     public Integer getId() {
         return id;
     }

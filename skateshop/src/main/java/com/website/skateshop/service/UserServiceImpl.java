@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
-        // Не устанавливаем ID - он сгенерируется автоматически
         UserEntity entity = new UserEntity();
         entity.setName(user.getName());
         entity.setSurname(user.getSurname());

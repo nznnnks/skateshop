@@ -63,7 +63,7 @@ public class OrderController {
                            @RequestParam Integer userId,
                            @RequestParam Integer paymentId) {
         OrderModel newOrder = new OrderModel();
-        newOrder.setId(null); // Явно устанавливаем null для нового заказа
+        newOrder.setId(null);
         newOrder.setBookingDate(LocalDate.parse(bookingDate, DATE_FORMATTER));
         newOrder.setStatus(status);
         newOrder.setUserId(userId);

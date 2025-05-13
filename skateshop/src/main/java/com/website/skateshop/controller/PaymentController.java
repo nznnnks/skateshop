@@ -29,7 +29,7 @@ public class PaymentController {
                                  @RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "10") int size) {
         model.addAttribute("payments", paymentService.findPaymentsPaginated(page, size));
-        model.addAttribute("users", userService.findAllUsers()); // Добавлено
+        model.addAttribute("users", userService.findAllUsers());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) paymentService.countPayments() / size));
         return "paymentList";
@@ -57,12 +57,12 @@ public class PaymentController {
     public String addPayment(@RequestParam Integer price,
                              @RequestParam String method,
                              @RequestParam String paymentDate,
-                             @RequestParam Integer userId) { // Добавлен параметр userId
+                             @RequestParam Integer userId) {
         PaymentModel newPayment = new PaymentModel();
         newPayment.setPrice(price);
         newPayment.setMethod(method);
         newPayment.setPaymentDate(LocalDate.parse(paymentDate, DATE_FORMATTER));
-        newPayment.setUserId(userId); // Установка пользователя
+        newPayment.setUserId(userId);
 
         paymentService.addPayment(newPayment);
         return "redirect:/payments";
@@ -73,13 +73,13 @@ public class PaymentController {
                                 @RequestParam Integer price,
                                 @RequestParam String method,
                                 @RequestParam String paymentDate,
-                                @RequestParam Integer userId) { // Добавлен параметр userId
+                                @RequestParam Integer userId) {
         PaymentModel updatedPayment = new PaymentModel();
         updatedPayment.setId(id);
         updatedPayment.setPrice(price);
         updatedPayment.setMethod(method);
         updatedPayment.setPaymentDate(LocalDate.parse(paymentDate, DATE_FORMATTER));
-        updatedPayment.setUserId(userId); // Установка пользователя
+        updatedPayment.setUserId(userId);
 
         paymentService.updatePayment(updatedPayment);
         return "redirect:/payments";

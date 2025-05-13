@@ -8,7 +8,6 @@
 <body>
 <h1>Управление связями товаров и заказов</h1>
 
-<!-- Форма добавления новой связи -->
 <form action="/product-orders/add" method="post">
   <h2>Добавить новую связь:</h2>
   <div>
@@ -39,7 +38,6 @@
   <button type="submit">Добавить связь</button>
 </form>
 
-<!-- Формы поиска -->
 <div class="search-forms">
   <form action="/product-orders/searchById" method="get">
     <h3>Поиск по ID связи:</h3>
@@ -60,7 +58,6 @@
   </form>
 </div>
 
-<!-- Таблица со списком связей -->
 <h2>Список связей:</h2>
 <table>
   <thead>
@@ -93,7 +90,6 @@
   </tbody>
 </table>
 
-<!-- Пагинация -->
 <div th:if="${totalPages > 0}" class="pagination">
   <span>Страницы: </span>
   <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
