@@ -54,6 +54,8 @@ public class ProductOrderController {
         model.addAttribute("productOrders", productOrder != null ? List.of(productOrder) : List.of());
         model.addAttribute("currentPage", 0);
         model.addAttribute("totalPages", 1);
+        model.addAttribute("productService", productService);
+        model.addAttribute("orderService", orderService);
         return "productOrderList";
     }
 
@@ -65,6 +67,8 @@ public class ProductOrderController {
         model.addAttribute("productOrders", productOrders);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) productOrders.size() / size));
+        model.addAttribute("productService", productService);
+        model.addAttribute("orderService", orderService);
         return "productOrderList";
     }
 
@@ -76,6 +80,8 @@ public class ProductOrderController {
         model.addAttribute("productOrders", productOrders);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) productOrders.size() / size));
+        model.addAttribute("productService", productService);
+        model.addAttribute("orderService", orderService);
         return "productOrderList";
     }
 

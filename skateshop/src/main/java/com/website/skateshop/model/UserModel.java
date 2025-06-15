@@ -27,11 +27,13 @@ public class UserModel {
     @NotBlank(message = "Пароль не может быть пустым")
     private String password;
 
+    private RoleModel role;
+
     public UserModel() {
     }
 
     public UserModel(Integer id, String name, String surname, String lastName,
-                     String phoneNum, String login, String password) {
+                     String phoneNum, String login, String password, RoleModel role) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -39,6 +41,7 @@ public class UserModel {
         this.phoneNum = phoneNum;
         this.login = login;
         this.password = password;
+        this.role = role;
     }
 
     public Integer getId() {
@@ -95,5 +98,13 @@ public class UserModel {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public RoleModel getRole() {
+        return role;
+    }
+
+    public void setRole(RoleModel role) {
+        this.role = role;
     }
 }

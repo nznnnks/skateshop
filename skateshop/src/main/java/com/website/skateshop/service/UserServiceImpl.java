@@ -1,7 +1,10 @@
 package com.website.skateshop.service;
 
+import com.website.skateshop.entity.RoleEntity;
 import com.website.skateshop.entity.UserEntity;
+import com.website.skateshop.model.RoleModel;
 import com.website.skateshop.model.UserModel;
+import com.website.skateshop.repository.RoleRepository;
 import com.website.skateshop.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,9 +16,11 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -48,14 +53,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
-        UserEntity entity = new UserEntity();
-        entity.setName(user.getName());
-        entity.setSurname(user.getSurname());
-        entity.setLastName(user.getLastName());
-        entity.setPhoneNum(user.getPhoneNum());
-        entity.setLogin(user.getLogin());
-        entity.setPassword(user.getPassword());
-
+        UserEntity entity = convertToEntity(user);
         UserEntity saved = userRepository.save(entity);
         return convertToModel(saved);
     }
@@ -86,6 +84,11 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserModel convertToModel(UserEntity entity) {
+        RoleModel roleModel = null;
+        if (entity.getRole() != null) {
+            roleModel = new RoleModel(entity.getRole().getId(), entity.getRole().getCharacterTitle());
+        }
+
         return new UserModel(
                 entity.getId(),
                 entity.getName(),
@@ -93,7 +96,8 @@ public class UserServiceImpl implements UserService {
                 entity.getLastName(),
                 entity.getPhoneNum(),
                 entity.getLogin(),
-                entity.getPassword()
+                entity.getPassword(),
+                roleModel
         );
     }
 
@@ -106,6 +110,13 @@ public class UserServiceImpl implements UserService {
         entity.setPhoneNum(model.getPhoneNum());
         entity.setLogin(model.getLogin());
         entity.setPassword(model.getPassword());
+
+        if (model.getRole() != null && model.getRole().getId() != 0) {
+            RoleEntity role = roleRepository.findById(model.getRole().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Role not found"));
+            entity.setRole(role);
+        }
+
         return entity;
     }
 }
