@@ -3,7 +3,12 @@ package com.website.skateshop.controller;
 import com.website.skateshop.model.UserModel;
 import com.website.skateshop.service.RoleService;
 import com.website.skateshop.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +18,16 @@ import java.util.List;
 @Controller
 @RequestMapping("/users")
 public class UserController {
-
     private final UserService userService;
     private final RoleService roleService;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    public UserController(UserService userService, RoleService roleService) {
+    public UserController(UserService userService,
+                          RoleService roleService,
+                          AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.roleService = roleService;
+        this.authenticationManager = authenticationManager;
     }
 
     @GetMapping
@@ -56,36 +63,61 @@ public class UserController {
         return "userList";
     }
 
-    @PostMapping("/add")
-    public String addUser(@RequestParam String name,
-                          @RequestParam String surname,
-                          @RequestParam String lastName,
-                          @RequestParam String phoneNum,
-                          @RequestParam String login,
-                          @RequestParam String password,
-                          @RequestParam int roleId) {
-        UserModel newUser = new UserModel();
-        newUser.setName(name);
-        newUser.setSurname(surname);
-        newUser.setLastName(lastName);
-        newUser.setPhoneNum(phoneNum);
-        newUser.setLogin(login);
-        newUser.setPassword(password);
-        newUser.setRole(roleService.findRoleById(roleId));
+    @GetMapping("/form")
+    public String showUserForm(Model model) {
+        model.addAttribute("showForm", true);
+        model.addAttribute("roles", roleService.findAllRoles());
+        return "users";
+    }
 
-        userService.addUser(newUser);
-        return "redirect:/users";
+    @PostMapping("/add")
+    public String addUser(
+            @RequestParam String name,
+            @RequestParam String surname,
+            @RequestParam String lastName,
+            @RequestParam String phoneNum,
+            @RequestParam String login,
+            @RequestParam String password,
+            @RequestParam(required = false) Integer roleId,
+            Model model,
+            HttpServletRequest request) {
+
+        try {
+            UserModel newUser = new UserModel();
+            newUser.setName(name);
+            newUser.setSurname(surname);
+            newUser.setLastName(lastName);
+            newUser.setPhoneNum(phoneNum);
+            newUser.setLogin(login);
+            newUser.setPassword(password);
+
+            if (roleId != null) {
+                newUser.setRole(roleService.findRoleById(roleId));
+            }
+
+            userService.addUser(newUser);
+            authenticateUser(login, password, request);
+
+            return "redirect:/home";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("showForm", true);
+            model.addAttribute("roles", roleService.findAllRoles());
+            return "users";
+        }
     }
 
     @PostMapping("/update")
-    public String updateUser(@RequestParam int id,
-                             @RequestParam String name,
-                             @RequestParam String surname,
-                             @RequestParam String lastName,
-                             @RequestParam String phoneNum,
-                             @RequestParam String login,
-                             @RequestParam String password,
-                             @RequestParam int roleId) {
+    public String updateUser(
+            @RequestParam int id,
+            @RequestParam String name,
+            @RequestParam String surname,
+            @RequestParam String lastName,
+            @RequestParam String phoneNum,
+            @RequestParam String login,
+            @RequestParam String password,
+            @RequestParam int roleId) {
+
         UserModel updatedUser = new UserModel(
                 id, name, surname, lastName,
                 phoneNum, login, password,
@@ -99,5 +131,20 @@ public class UserController {
     public String deleteUser(@RequestParam int id) {
         userService.deleteUser(id);
         return "redirect:/users";
+    }
+
+    private void authenticateUser(String username, String password, HttpServletRequest request) {
+        try {
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(username, password);
+
+            Authentication authentication = authenticationManager.authenticate(authToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка автоматического входа после регистрации", e);
+        }
     }
 }

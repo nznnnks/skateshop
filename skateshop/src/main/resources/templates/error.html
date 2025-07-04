@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Ошибка</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-$END$
+<div class="container">
+    <h1>Произошла ошибка</h1>
+    <div class="alert alert-danger">
+        <p>Статус: [[${status}]]</p>
+        <p>Ошибка: [[${error}]]</p>
+        <p>Сообщение: [[${message}]]</p>
+        <a th:href="@{/home}" class="btn btn-primary">Вернуться на главную</a>
+    </div>
+</div>
 </body>
 </html>

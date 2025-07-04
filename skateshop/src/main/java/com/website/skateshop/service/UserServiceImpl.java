@@ -6,21 +6,40 @@ import com.website.skateshop.model.RoleModel;
 import com.website.skateshop.model.UserModel;
 import com.website.skateshop.repository.RoleRepository;
 import com.website.skateshop.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository,
+                           RoleRepository roleRepository,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -47,15 +66,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel addUser(UserModel user) {
         if (userRepository.existsByLogin(user.getLogin())) {
-            throw new IllegalArgumentException("Login already exists");
+            throw new IllegalArgumentException("Логин уже существует");
         }
         if (userRepository.existsByPhoneNum(user.getPhoneNum())) {
-            throw new IllegalArgumentException("Phone number already exists");
+            throw new IllegalArgumentException("Номер телефона уже используется");
         }
 
-        UserEntity entity = convertToEntity(user);
-        UserEntity saved = userRepository.save(entity);
-        return convertToModel(saved);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (user.getRole() == null) {
+            RoleEntity defaultRole = roleRepository.findByCharacterTitle("ROLE_USER")
+                    .orElseThrow(() -> new IllegalStateException("Default role not found"));
+            user.setRole(new RoleModel(defaultRole.getId(), defaultRole.getCharacterTitle()));
+        }
+
+        return convertToModel(userRepository.save(convertToEntity(user)));
+    }
+
+    private void authenticateUser(String username, String rawPassword) {
+        UserDetails userDetails = loadUserByUsername(username);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                rawPassword,
+                userDetails.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Override
@@ -81,6 +116,37 @@ public class UserServiceImpl implements UserService {
     @Override
     public long countUsers() {
         return userRepository.count();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("Attempting to authenticate user: " + username);
+        List<UserEntity> users = userRepository.findByLogin(username);
+
+        if (users.isEmpty()) {
+            System.out.println("User not found: " + username);
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        UserEntity user = users.get(0);
+        System.out.println("Found user: " + user.getLogin());
+        System.out.println("Stored password hash: " + user.getPassword());
+
+        return User.builder()
+                .username(user.getLogin())
+                .password(user.getPassword())
+                .authorities(mapRolesToAuthorities(user.getRole()))
+                .build();
+    }
+
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(RoleEntity role) {
+        if (role == null) {
+            return Collections.emptyList();
+        }
+        String roleName = role.getCharacterTitle().startsWith("ROLE_")
+                ? role.getCharacterTitle()
+                : "ROLE_" + role.getCharacterTitle();
+        return List.of(new SimpleGrantedAuthority(roleName));
     }
 
     private UserModel convertToModel(UserEntity entity) {

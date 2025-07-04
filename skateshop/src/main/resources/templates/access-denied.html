@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <title>Доступ запрещен</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-$END$
+<div class="access-denied-container">
+  <h1>Доступ запрещен</h1>
+  <div class="error-message">
+    <p>У вас недостаточно прав для просмотра этой страницы.</p>
+    <p>Ваша роль: <span th:text="${#authentication.principal.authorities}"></span></p>
+    <p>Обратитесь к администратору для получения доступа.</p>
+  </div>
+  <a th:href="@{/home}" class="btn-home">Вернуться на главную</a>
+</div>
 </body>
 </html>

@@ -1,10 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <title>Главная</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-$END$
+<h1>Home page</h1>
+<div class="user-info" th:if="${#authentication.principal}">
+  <p>Вы вошли как: <span th:text="${#authentication.principal.username}"></span></p>
+  <p>Роль: <span th:text="${#authentication.principal.authorities}"></span></p>
+  <form th:action="@{/logout}" method="post">
+    <button type="submit" class="btn-logout">Выйти</button>
+  </form>
+</div>
+<nav>
+  <div th:if="${#authorization.expression('hasRole(''ADMINISTRATOR'')')}">
+    <a th:href="@{/users}">Управление пользователями</a>
+    <a th:href="@{/roles}">Управление ролями</a>
+  </div>
+  <div th:if="${#authorization.expression('hasAnyRole(''ADMINISTRATOR'',''EMPLOYEE'')')}">
+    <a th:href="@{/product-orders}">Управление товарами и заказами</a>
+    <a th:href="@{/products}">Управление товарами</a>
+    <a th:href="@{/categories}">Управление категориями</a>
+    <a th:href="@{/brands}">Управление брендами</a>
+  </div>
+  <div th:if="${#authorization.expression('isAuthenticated()')}">
+    <a th:href="@{/reviews}">Управление отзывами</a>
+    <a th:href="@{/orders}">Управление заказами</a>
+    <a th:href="@{/payments}">Управление оплатой</a>
+  </div>
+</nav>
 </body>
 </html>

@@ -1,9 +1,10 @@
 package com.website.skateshop.service;
 
 import com.website.skateshop.model.UserModel;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.List;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
     List<UserModel> findAllUsers();
     UserModel findUserById(int id);
     List<UserModel> findUsersByLogin(String login);

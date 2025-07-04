@@ -2,12 +2,21 @@ package com.website.skateshop.entity;
 
 import com.website.skateshop.model.RoleModel;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "roles", uniqueConstraints = {
         @UniqueConstraint(columnNames = "charactertitle")
 })
-public class RoleEntity extends RoleModel {
+public class RoleEntity extends RoleModel implements GrantedAuthority {
+
+    public RoleEntity() {
+        super();
+    }
+
+    public RoleEntity(int id, String characterTitle) {
+        super(id, characterTitle);
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,11 +31,9 @@ public class RoleEntity extends RoleModel {
         return super.getCharacterTitle();
     }
 
-    public RoleEntity() {
-        super();
-    }
-
-    public RoleEntity(int id, String characterTitle) {
-        super(id, characterTitle);
+    @Override
+    @Transient
+    public String getAuthority() {
+        return getCharacterTitle();
     }
 }
